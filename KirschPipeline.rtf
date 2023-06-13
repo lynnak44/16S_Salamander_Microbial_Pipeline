@@ -1,0 +1,288 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2639
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fnil\fcharset0 Menlo-Bold;\f1\fnil\fcharset0 Menlo-Regular;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red85\green142\blue40;\red0\green0\blue0;
+\red18\green145\blue206;}
+{\*\expandedcolortbl;;\cssrgb\c0\c0\c0;\cssrgb\c39975\c61335\c20601;\csgray\c0;
+\cssrgb\c0\c63852\c84489;}
+\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\deftab720
+\pard\pardeftab720\partightenfactor0
+
+\f0\b\fs24 \cf0 \expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 ##This portion in bash and python\
+##Requires that the filenames be in a certain format:
+\f1\b0 \cf3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf3 \
+\cf2 ls *R1*|sort -V >R1old.names\
+ls *R2*|sort -V >R2old.names\
+\
+
+\f0\b #Copy and paste names from R1old.names into Excel\
+#Make a list of new names, or simply change the aspects of the old names that you don\'92t want to keep\
+#Save the file as R1.names.txt, and the file should have the old names in the first column and the new names in the second\
+#Follow the format SampleID.R1.fastq.gz, repeat for R2
+\f1\b0 \
+
+\f0\b #Open the file in BBEdit and save as UNIX file to avoid invisible characters
+\f1\b0 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf4 \CocoaLigature0 cat R1.names|while read old new; do mv $old $new; done
+\f0\b \cf5 \CocoaLigature1 \
+
+\f1\b0 \cf4 \CocoaLigature0 cat R2.names|while read old new; do mv $old $new; done 
+\f0\b \cf5 \CocoaLigature1 \
+\pard\pardeftab720\partightenfactor0
+
+\f1\b0 \cf0 \expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 \
+
+\f0\b #testing AdapterRemoval
+\f1\b0 \
+AdapterRemoval --file1 S001.R1.fastq.gz --file2 S001.R2.fastq.gz --collapse --minalignmentlength 50 --minlength 30 --trimns --maxns 1 --trimqualities --minquality 30 --basename test.AR --threads 2 1>test.AR.log 2>test.AR.err &\
+\
+
+\f0\b #full command
+\f1\b0 \
+\pard\pardeftab720\partightenfactor0
+\cf0 ls *.R1.fastq.gz|sed -e 's/.R1.fastq.gz//' |while read sample; do AdapterRemoval --file1 $sample.R1.fastq.gz --file2 $sample.R2.fastq.gz --collapse --minalignmentlength 50 --minlength 30 --trimns --maxns 1 --trimqualities --minquality 30 --basename $sample.AR --threads 2 1>$sample.AR.log 2>$sample.AR.err; done &\
+\
+rm *.AR.collapsed* rm *.discarded rm *.truncated rm *.err rm *.log mv *.fastq /Users/madelynkirsch/Dropbox/Siler_Lab_Research_2021/Salamander_Microbiome_Sequences/Raw_Sequences/AnalysisReady \
+\
+ls *.fastq | sed -e 's/.fastq//' | while read sample; do python /Users/madelynkirsch/Dropbox/Siler_Lab_Research_2021/Salamander_Microbiome_Sequences/Scripts/Rename_fastq_to_fasta.py $sample.fastq $sample >$sample.fa; done & \
+\
+
+\f0\b #references this python script, Rename_fastq_to_fasta.py:\
+\
+
+\f1\b0 import os,sys\
+\
+infile=open(sys.argv[1])\
+sname=sys.argv[2]\
+\
+dataIN=infile.readlines()\
+\
+j=0\
+for i in range(0,len(dataIN),4):\
+	print (">"+sname+"_"+str(j)+"\\t"+dataIN[i].split('@')[1].rstrip())\
+	print(dataIN[i+1].rstrip())\
+	j+=1\
+infile.close()\
+\
+cat *.fa >SalamanderMicrobiomes.fasta python /Users/madelynkirsch/Dropbox/Siler_Lab_Research_2021/Salamander_Microbiome_Sequences/Scripts/Make_unique.py SalamanderMicrobiomes.fasta TotalDerep.fasta 2 \
+\
+
+\f0\b #References this python script, Make_unique.py, this step is necessary for USEARCH but not VSEARCH (I had to use VSEARCH because I have a Macbook)\
+\
+
+\f1\b0 import os, sys\
+\
+fastaDict=\{\}\
+\
+minsize=int(sys.argv[3])\
+\
+with open(sys.argv[1],'r') as inFile:\
+	sequence=inFile.readlines()\
+	for i in range(0,len(sequence),2):\
+		seq=sequence[i+1].rstrip()\
+		if seq not in fastaDict:\
+			fastaDict[seq]=1\
+		else:\
+			fastaDict[seq]+=1\
+\
+k=1;		\
+\
+with open(sys.argv[2],'w') as outFile:\
+	for val in sorted(fastaDict, key=fastaDict.get, reverse=True):\
+		if int(fastaDict[val]) >= minsize:\
+			outFile.write(">Uni"+str(k)+";size="+str(fastaDict[val])+";"+"\\n"+val+"\\n")\
+			k+=1\
+		else:\
+			pass
+\f0\b \
+		
+\f1\b0 \
+\
+
+\f0\b #the number is the minimum frequency it must appear to be included, not necessary for VSEARCH but it's fine to do this 
+\f1\b0 \
+\
+grep ">" TotalDerep.fasta | grep ";size=2;" |wc -l \
+\
+/Users/madelynkirsch/Downloads/vsearch-2.21.1-macos-x86_64/bin/vsearch --cluster_unoise TotalDerep.fasta --sizein --minsize 3 --unoise_alpha 2.0 --centroids asv.fasta --clusterout_sort --relabel asvrep --sizeout\
+\
+
+\f0\b #filter chimeras
+\f1\b0 \
+/Users/madelynkirsch/Downloads/vsearch-2.21.1-macos-x86_64/bin/vsearch --uchime3_denovo asv.fasta --uchimeout chimera.txt --sizein --nonchimeras asvfinal.fasta\
+\
+
+\f0\b #make blast database with database I downloaded
+\f1\b0 \
+makeblastdb -in ezbiocloud_qiime_full.fasta -dbtype nucl -out 16SRef \
+\
+blastn -query asvfinal.fasta -db /Users/madelynkirsch/Downloads/EzBioCloud_16S_database_for_QIIME/16SRef -outfmt '6 qseqid sseqid qstart qend sstart send qlen slen length pident bitscore evalue' -max_hsps 1 -max_target_seqs 1 -num_threads 4 -out zotus_16S.blast 1>Zotusblast.log 2>Zotusblast.err &\
+\
+
+\f0\b #to check that the query length is the same as the alignment length, compare alignment to query (column 9 and column 7 in zotus_16s.blast\
+\
+
+\f1\b0 awk -F "\\t" '\{print $1\}' zotus_16S.blast | sort | uniq | wc -l 
+\f0\b #produces the number of sequences\
+\
+
+\f1\b0 awk -F "\\t" '\{print $2\}' zotus_16S.blast | sort | uniq | wc -l 
+\f0\b #produces the number of ASVs\
+\
+
+\f1\b0 awk -F "\\t" '\{print $7\}' zotus_16S.blast | sort | uniq -c 1 175 
+\f0\b #checks query lengths\
+\
+
+\f1\b0 awk -F "\\t" '\{print $9\}' zotus_16S.blast | sort -n | uniq -c 
+\f0\b #checks sequence lengths\
+\
+
+\f1\b0 awk -F "\\t" '$9/$7 >= 0.9 \{print $1\}' zotus_16S.blast | wc -l 
+\f0\b #if I were to remove matches below 90%, how many are left?\
+\
+
+\f1\b0 grep "^>" asvfinal.fasta| sed -e 's/>//' | while read asv \
+do \
+echo $asv | tr "\\n" "\\t" \
+grep "^$asv" -w -m 1 zotus_16S.blast | awk -F "\\t" '$9/$7 >= 0.9 \{print $1 "\\t" $2 "\\t" $10\}' | while read query ref percent \
+do echo -e $query"\\t"$ref"\\t"$percent | tr "\\n" "\\t" \
+grep "^$ref" -w -m 1 /Users/madelynkirsch/Downloads/EzBioCloud_16S_database_for_QIIME/ezbiocloud_id_taxonomy.txt | tr "\\n" "\\t" \
+echo \
+done \
+done >Zotus_tax.txt &
+\f0\b \
+\
+#for actual read mapping I used the SalamanderMicrobiomes.fasta file, not the Derep
+\f1\b0 \
+\
+python ../../Scripts/relabel_vsearch.py SalamanderMicrobiomes.fasta >TotalReads.fasta\
+\
+
+\f0\b #References this script, relabel.vsearch.py:\
+\
+
+\f1\b0 import os,sys\
+\
+infile=open(sys.argv[1])\
+dataIN=infile.readlines()\
+for i in range(0,len(dataIN),2):\
+	seqID=dataIN[i].split('>')[1].split('\\t')[0]\
+	sampleID=seqID.split('_')[0].rstrip()\
+	print(">"+seqID+";sample="+sampleID)\
+	#print (">"+sname+"_"+str(j)+"\\t"+dataIN[i].split('>')[1].rstrip())\
+	print(dataIN[i+1].rstrip())\
+	#j+=1\
+infile.close()\
+
+\f0\b \
+
+\f1\b0 /Users/madelynkirsch/Downloads/vsearch-2.21.1-macos-x86_64/bin/vsearch --search_exact TotalReads.fasta --db asvfinal.fasta --threads 4 --otutabout asvexact.tab 1>asvexact.log 2>asvexact.err &\
+\
+
+\f0\b #this matches to 100% only. Run 
+\f1\b0 cat asvexact.err 
+\f0\b to find out how many sequences were matched. If below 90% of data, try again using lower threshold (don\'92t go below 0.985). \
+\
+
+\f1\b0 /Users/madelynkirsch/Downloads/vsearch-2.21.1-macos-x86_64/bin/vsearch --usearch_global TotalReads.fasta --db asvfinal.fasta --threads 4 --id 0.995 --otutabout asv.995.tab 1>asv.995.log 2>asv.995.err &\
+\
+mafft asvfinal.fasta > asvfinal.align.fasta \
+\
+fasttree -nt asvfinal.align.fasta > asvfinal.nwk 
+\f0\b #build tree
+\f1\b0 \
+\
+\pard\pardeftab720\partightenfactor0
+
+\f0\b \cf0 #Here and below code is run in R\
+\
+\pard\pardeftab720\partightenfactor0
+
+\f1\b0 \cf0 metadata <- read.csv("OfficialMetadata.csv", fileEncoding = "latin1", sep = ",", header = TRUE) \
+rownames(metadata) <- metadata$SampleID \
+metadata$Elevation_ft <- as.numeric(metadata$Elevation_ft) \
+tree <- read_tree("asvfinal.nwk") \
+otutable <- read.table("asv.995.tab", header = TRUE, row.names = 1, sep = "\\t") \
+taxtable <- read.table("Zotus_tax.txt", header = TRUE, row.names = 1, sep = "\\t") \
+physeqmain <- phyloseq(otu_table(otutable, taxa_are_rows = TRUE), tax_table(as.matrix(taxtable)), sample_data(metadata), phy_tree(tree))\
+\
+samplecounts <- as.data.frame(colSums(otu_table(physeqmain))) \
+metanew <- merge(metadata, samplecounts, by = "row.names") names(metanew)[28] <- "OTUcounts" \
+metanew <- metanew %>% remove_rownames %>% column_to_rownames(var="Row.names")\
+\
+alphadiv <- estimate_richness(physeq, measures = c("Observed", "Shannon", "InvSimpson"))
+\f0\b \
+\pard\pardeftab720\partightenfactor0
+
+\f1\b0 \cf0 \
+\pard\pardeftab720\partightenfactor0
+\cf0 alphadivmeta <- merge(alphadiv, metanew, by = "row.names") \
+alphadivmeta <- alphadivmeta %>% remove_rownames %>% column_to_rownames(var="Row.names") 
+\f0\b #fixing row names issue\
+\
+\pard\pardeftab720\partightenfactor0
+
+\f1\b0 \cf0 \outl0\strokewidth0 uw <- UniFrac(physeq, weighted = FALSE) \
+wd <- UniFrac(physeq, weighted = TRUE) \
+PCoAuw <- ordinate(physeq, method = "PCoA", distance = "uw") \
+PCoAwd <- ordinate(physeq, method = "PCoA", distance = "wd")\
+\
+
+\f0\b #Differential abundance\
+
+\f1\b0 diffanalysis <- phyloseq_to_deseq2(ps, design = ~Timepoint)\
+diffanalysis <- estimateSizeFactors(diffanalysis, type = "poscounts")\
+diffanalysis <- DESeq(diffanalysis, test = "LRT", reduced = ~1)\
+diffresults <- results(diffanalysis)\
+significantASV <- diffresults[which(diffresults$padj <0.05), ] #can look through this list of ASVs that are significant and then plot them\
+\
+significantASV\
+\
+genes <- order(significantASV$log2FoldChange, decreasing=TRUE)[1:20]\
+\
+annot_col <- metanew %>%\
+  column_to_rownames('Row.names') %>%\
+  select(Timepoint) %>%\
+  as.data.frame()\
+\
+pheatmap(assay(diffanalysis)[genes, ], cluster_rows=F, show_rownames=T, cluster_cols=F, scale = "row", annotate = annot_col)\
+\
+\pard\pardeftab720\partightenfactor0
+\cf0 \outl0\strokewidth0 \strokec2 alphadivmeta$LifeStage[alphadivmeta$LifeStage == "adult or juvenile"] <- NA 
+\f0\b #removing values I don\'92t want\
+\
+#scale the data if necessary
+\f1\b0  \
+scaled <- alphadivmeta \
+scaled$Elevation_ft <- scale(scaled$Elevation_ft)\
+\
+
+\f0\b #Alpha and beta diversity analyses examples\
+
+\f1\b0 kruskal.test(data = alphadivmeta, Observed~Family) 
+\f0\b #comparing variables with two categorical values, Kruskal-Wallis test
+\f1\b0 \
+pairwise.wilcox.test(alphadivmeta$Observed, alphadivmeta_1000$SpeciesID, p.adjust = "holm") 
+\f0\b #comparing variables with more than two categorical values, pairwise Wilcoxon rank-sum test\
+\
+
+\f1\b0 pairwise.adonis2(uw~SpeciesID, p.adjust.m = "holm", data = as(sample_data(alphadivmeta), "data.frame")) 
+\f0\b #PermANOVA\
+\
+
+\f1\b0 \
+
+\f0\b \outl0\strokewidth0 \outl0\strokewidth0 \strokec2 \
+\pard\pardeftab720\partightenfactor0
+
+\f1\b0 \cf0 \
+\
+\
+}
