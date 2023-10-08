@@ -9,10 +9,10 @@
 \pard\pardeftab720\partightenfactor0
 
 \f0\b\fs24 \cf0 \expnd0\expndtw0\kerning0
-\outl0\strokewidth0 \strokec2 ##This portion in bash and python\
+##This portion in bash and python\
 ##Requires that the filenames be in a certain format:
-\f1\b0 \cf3 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 \
-\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\f1\b0 \cf3 \kerning1\expnd0\expndtw0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardeftab720\pardirnatural\partightenfactor0
 \cf3 \
 \cf2 ls *R1*|sort -V >R1old.names\
 ls *R2*|sort -V >R2old.names\
@@ -27,7 +27,7 @@ ls *R2*|sort -V >R2old.names\
 \f0\b #Open the file in BBEdit and save as UNIX file to avoid invisible characters
 \f1\b0 \
 \
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
 \cf4 \CocoaLigature0 cat R1.names|while read old new; do mv $old $new; done
 \f0\b \cf5 \CocoaLigature1 \
 
@@ -36,17 +36,17 @@ ls *R2*|sort -V >R2old.names\
 \pard\pardeftab720\partightenfactor0
 
 \f1\b0 \cf0 \expnd0\expndtw0\kerning0
-\outl0\strokewidth0 \strokec2 \
+\
+\pard\pardeftab720\partightenfactor0
 
-\f0\b #testing AdapterRemoval
+\f0\b \cf0 #testing AdapterRemoval
 \f1\b0 \
 AdapterRemoval --file1 S001.R1.fastq.gz --file2 S001.R2.fastq.gz --collapse --minalignmentlength 50 --minlength 30 --trimns --maxns 1 --trimqualities --minquality 30 --basename test.AR --threads 2 1>test.AR.log 2>test.AR.err &\
 \
 
 \f0\b #full command
 \f1\b0 \
-\pard\pardeftab720\partightenfactor0
-\cf0 ls *.R1.fastq.gz|sed -e 's/.R1.fastq.gz//' |while read sample; do AdapterRemoval --file1 $sample.R1.fastq.gz --file2 $sample.R2.fastq.gz --collapse --minalignmentlength 50 --minlength 30 --trimns --maxns 1 --trimqualities --minquality 30 --basename $sample.AR --threads 2 1>$sample.AR.log 2>$sample.AR.err; done &\
+ls *.R1.fastq.gz|sed -e 's/.R1.fastq.gz//' |while read sample; do AdapterRemoval --file1 $sample.R1.fastq.gz --file2 $sample.R2.fastq.gz --collapse --minalignmentlength 50 --minlength 30 --trimns --maxns 1 --trimqualities --minquality 30 --basename $sample.AR --threads 2 1>$sample.AR.log 2>$sample.AR.err; done &\
 \
 rm *.AR.collapsed* rm *.discarded rm *.truncated rm *.err rm *.log mv *.fastq /Users/madelynkirsch/Dropbox/Siler_Lab_Research_2021/Salamander_Microbiome_Sequences/Raw_Sequences/AnalysisReady \
 \
@@ -55,8 +55,9 @@ ls *.fastq | sed -e 's/.fastq//' | while read sample; do python /Users/madelynki
 
 \f0\b #references this python script, Rename_fastq_to_fasta.py:\
 \
+\pard\pardeftab720\partightenfactor0
 
-\f1\b0 import os,sys\
+\f1\b0 \cf0 import os,sys\
 \
 infile=open(sys.argv[1])\
 sname=sys.argv[2]\
@@ -72,11 +73,13 @@ infile.close()\
 \
 cat *.fa >SalamanderMicrobiomes.fasta python /Users/madelynkirsch/Dropbox/Siler_Lab_Research_2021/Salamander_Microbiome_Sequences/Scripts/Make_unique.py SalamanderMicrobiomes.fasta TotalDerep.fasta 2 \
 \
+\pard\pardeftab720\partightenfactor0
 
-\f0\b #References this python script, Make_unique.py, this step is necessary for USEARCH but not VSEARCH (I had to use VSEARCH because I have a Macbook)\
+\f0\b \cf0 #References this python script, Make_unique.py, this step is necessary for USEARCH but not VSEARCH (I had to use VSEARCH because I have a Macbook)\
 \
+\pard\pardeftab720\partightenfactor0
 
-\f1\b0 import os, sys\
+\f1\b0 \cf0 import os, sys\
 \
 fastaDict=\{\}\
 \
@@ -104,8 +107,9 @@ with open(sys.argv[2],'w') as outFile:\
 		
 \f1\b0 \
 \
+\pard\pardeftab720\partightenfactor0
 
-\f0\b #the number is the minimum frequency it must appear to be included, not necessary for VSEARCH but it's fine to do this 
+\f0\b \cf0 #the number is the minimum frequency it must appear to be included, not necessary for VSEARCH but it's fine to do this 
 \f1\b0 \
 \
 grep ">" TotalDerep.fasta | grep ";size=2;" |wc -l \
@@ -127,8 +131,9 @@ blastn -query asvfinal.fasta -db /Users/madelynkirsch/Downloads/EzBioCloud_16S_d
 
 \f0\b #to check that the query length is the same as the alignment length, compare alignment to query (column 9 and column 7 in zotus_16s.blast\
 \
+\pard\pardeftab720\partightenfactor0
 
-\f1\b0 awk -F "\\t" '\{print $1\}' zotus_16S.blast | sort | uniq | wc -l 
+\f1\b0 \cf0 awk -F "\\t" '\{print $1\}' zotus_16S.blast | sort | uniq | wc -l 
 \f0\b #produces the number of sequences\
 \
 
@@ -164,11 +169,13 @@ done >Zotus_tax.txt &
 \
 python ../../Scripts/relabel_vsearch.py SalamanderMicrobiomes.fasta >TotalReads.fasta\
 \
+\pard\pardeftab720\partightenfactor0
 
-\f0\b #References this script, relabel.vsearch.py:\
+\f0\b \cf0 #References this script, relabel.vsearch.py:\
 \
+\pard\pardeftab720\partightenfactor0
 
-\f1\b0 import os,sys\
+\f1\b0 \cf0 import os,sys\
 \
 infile=open(sys.argv[1])\
 dataIN=infile.readlines()\
@@ -180,18 +187,22 @@ for i in range(0,len(dataIN),2):\
 	print(dataIN[i+1].rstrip())\
 	#j+=1\
 infile.close()\
+\pard\pardeftab720\partightenfactor0
 
-\f0\b \
+\f0\b \cf0 \
+\pard\pardeftab720\partightenfactor0
 
-\f1\b0 /Users/madelynkirsch/Downloads/vsearch-2.21.1-macos-x86_64/bin/vsearch --search_exact TotalReads.fasta --db asvfinal.fasta --threads 4 --otutabout asvexact.tab 1>asvexact.log 2>asvexact.err &\
+\f1\b0 \cf0 /Users/madelynkirsch/Downloads/vsearch-2.21.1-macos-x86_64/bin/vsearch --search_exact TotalReads.fasta --db asvfinal.fasta --threads 4 --otutabout asvexact.tab 1>asvexact.log 2>asvexact.err &\
 \
+\pard\pardeftab720\partightenfactor0
 
-\f0\b #this matches to 100% only. Run 
+\f0\b \cf0 #this matches to 100% only. Run 
 \f1\b0 cat asvexact.err 
 \f0\b to find out how many sequences were matched. If below 90% of data, try again using lower threshold (don\'92t go below 0.985). \
 \
+\pard\pardeftab720\partightenfactor0
 
-\f1\b0 /Users/madelynkirsch/Downloads/vsearch-2.21.1-macos-x86_64/bin/vsearch --usearch_global TotalReads.fasta --db asvfinal.fasta --threads 4 --id 0.995 --otutabout asv.995.tab 1>asv.995.log 2>asv.995.err &\
+\f1\b0 \cf0 /Users/madelynkirsch/Downloads/vsearch-2.21.1-macos-x86_64/bin/vsearch --usearch_global TotalReads.fasta --db asvfinal.fasta --threads 4 --id 0.995 --otutabout asv.995.tab 1>asv.995.log 2>asv.995.err &\
 \
 mafft asvfinal.fasta > asvfinal.align.fasta \
 \
@@ -205,12 +216,28 @@ fasttree -nt asvfinal.align.fasta > asvfinal.nwk
 \
 \pard\pardeftab720\partightenfactor0
 
-\f1\b0 \cf0 metadata <- read.csv("OfficialMetadata.csv", fileEncoding = "latin1", sep = ",", header = TRUE) \
-rownames(metadata) <- metadata$SampleID \
-metadata$Elevation_ft <- as.numeric(metadata$Elevation_ft) \
-tree <- read_tree("asvfinal.nwk") \
-otutable <- read.table("asv.995.tab", header = TRUE, row.names = 1, sep = "\\t") \
-taxtable <- read.table("Zotus_tax.txt", header = TRUE, row.names = 1, sep = "\\t") \
+\f1\b0 \cf0 library(vegan)\
+library(phyloseq)\
+library(tidyverse)\
+library(ggplot2)\
+library(ggpubr)\
+library(DESeq2)\
+library(ggthemes)\
+library(pheatmap)\
+library(pairwiseAdonis)\
+library(geodist)\
+library(picante)\
+library(microbiome)\
+library(hrbrthemes)\
+library(gcookbook)\
+library(colorRamps)\
+library(dplyr)\
+library(reshape2)\
+library(knitr)\
+library(readxl)
+\f0\b \
+
+\f1\b0 \
 physeqmain <- phyloseq(otu_table(otutable, taxa_are_rows = TRUE), tax_table(as.matrix(taxtable)), sample_data(metadata), phy_tree(tree))\
 \
 samplecounts <- as.data.frame(colSums(otu_table(physeqmain))) \
@@ -219,25 +246,24 @@ metanew <- metanew %>% remove_rownames %>% column_to_rownames(var="Row.names")\
 \
 alphadiv <- estimate_richness(physeq, measures = c("Observed", "Shannon", "InvSimpson"))
 \f0\b \
-\pard\pardeftab720\partightenfactor0
 
-\f1\b0 \cf0 \
-\pard\pardeftab720\partightenfactor0
-\cf0 alphadivmeta <- merge(alphadiv, metanew, by = "row.names") \
+\f1\b0 \
+alphadivmeta <- merge(alphadiv, metanew, by = "row.names") \
 alphadivmeta <- alphadivmeta %>% remove_rownames %>% column_to_rownames(var="Row.names") 
 \f0\b #fixing row names issue\
 \
-\pard\pardeftab720\partightenfactor0
 
-\f1\b0 \cf0 \outl0\strokewidth0 uw <- UniFrac(physeq, weighted = FALSE) \
+\f1\b0 uw <- UniFrac(physeq, weighted = FALSE) \
 wd <- UniFrac(physeq, weighted = TRUE) \
 PCoAuw <- ordinate(physeq, method = "PCoA", distance = "uw") \
 PCoAwd <- ordinate(physeq, method = "PCoA", distance = "wd")\
 \
+\pard\pardeftab720\partightenfactor0
 
-\f0\b #Differential abundance\
+\f0\b \cf0 #Differential abundance\
+\pard\pardeftab720\partightenfactor0
 
-\f1\b0 diffanalysis <- phyloseq_to_deseq2(ps, design = ~Timepoint)\
+\f1\b0 \cf0 diffanalysis <- phyloseq_to_deseq2(ps, design = ~Timepoint)\
 diffanalysis <- estimateSizeFactors(diffanalysis, type = "poscounts")\
 diffanalysis <- DESeq(diffanalysis, test = "LRT", reduced = ~1)\
 diffresults <- results(diffanalysis)\
@@ -254,8 +280,7 @@ annot_col <- metanew %>%\
 \
 pheatmap(assay(diffanalysis)[genes, ], cluster_rows=F, show_rownames=T, cluster_cols=F, scale = "row", annotate = annot_col)\
 \
-\pard\pardeftab720\partightenfactor0
-\cf0 \outl0\strokewidth0 \strokec2 alphadivmeta$LifeStage[alphadivmeta$LifeStage == "adult or juvenile"] <- NA 
+alphadivmeta$LifeStage[alphadivmeta$LifeStage == "adult or juvenile"] <- NA 
 \f0\b #removing values I don\'92t want\
 \
 #scale the data if necessary
@@ -263,10 +288,12 @@ pheatmap(assay(diffanalysis)[genes, ], cluster_rows=F, show_rownames=T, cluster_
 scaled <- alphadivmeta \
 scaled$Elevation_ft <- scale(scaled$Elevation_ft)\
 \
+\pard\pardeftab720\partightenfactor0
 
-\f0\b #Alpha and beta diversity analyses examples\
+\f0\b \cf0 #Alpha and beta diversity analyses examples\
+\pard\pardeftab720\partightenfactor0
 
-\f1\b0 kruskal.test(data = alphadivmeta, Observed~Family) 
+\f1\b0 \cf0 kruskal.test(data = alphadivmeta, Observed~Family) 
 \f0\b #comparing variables with two categorical values, Kruskal-Wallis test
 \f1\b0 \
 pairwise.wilcox.test(alphadivmeta$Observed, alphadivmeta_1000$SpeciesID, p.adjust = "holm") 
@@ -276,10 +303,113 @@ pairwise.wilcox.test(alphadivmeta$Observed, alphadivmeta_1000$SpeciesID, p.adjus
 \f1\b0 pairwise.adonis2(uw~SpeciesID, p.adjust.m = "holm", data = as(sample_data(alphadivmeta), "data.frame")) 
 \f0\b #PermANOVA\
 \
+#CART Analysis\
+\
+
+\f1\b0 library(partykit)\
+library(ggparty)\
+\
+scaled$SpeciesID <- as.factor(scaled$SpeciesID)\
+scaled$Family <- as.factor(scaled$Family)\
+scaled$Genus <- as.factor(scaled$Genus)\
+scaled$Species <- as.factor(scaled$Species)\
+scaled$Ecoregion <- as.factor(scaled$Ecoregion)\
+scaled$Habitat <- as.factor(scaled$Habitat)\
+scaled$LifeStage <- as.factor(scaled$LifeStage)\
+scaled$Bd <- as.factor(scaled$Bd)\
+scaled$RV <- as.factor(scaled$RV)\
+scaled$Year <- as.numeric(scaled$Year)\
+scaled$Location <- as.factor(scaled$Location)\
+scaled$Elevation_ft <- as.numeric(scaled$Elevation_ft)\
+scaled$MAT <- as.numeric(scaled$MAT)\
+scaled$Tave_spring <- as.numeric(scaled$Tave_spring)\
+scaled$Tave_month <- as.numeric(scaled$Tave_month)\
+scaled$MAP <- as.numeric(scaled$MAP)\
+scaled$PPT_spring <- as.numeric(scaled$PPT_spring)\
+scaled$PPT_month <- as.numeric(scaled$PPT_month)\
+\
+test <- ctree(Observed ~ Family + Genus + Species + Ecoregion + Habitat + LifeStage + Bd + RV + Year + Elevation_ft + MAT + Tave_spring + Tave_month + MAP + PPT_spring + PPT_month, data = scaled)\
+test2 <- ctree(Shannon ~ Family + Genus + Species + Ecoregion + Habitat + LifeStage + Bd + RV + Year + Elevation_ft + MAT + Tave_spring + Tave_month + MAP + PPT_spring + PPT_month, data = scaled)\
+test3 <- ctree(InvSimpson ~ Family + Genus + Species + Ecoregion + Habitat + LifeStage + Bd + RV + Year + Elevation_ft + MAT + Tave_spring + Tave_month + PPT_spring + PPT_month, data = scaled)\
+\
+\pard\pardeftab720\partightenfactor0
+
+\f0\b \cf0 #PGLMM\
+\
+#testing collinearity example
+\f1\b0 \
+coll <- lm(Observed~1 + Habitat + LifeStage  + Bd + RV + Elevation_ft + Tave_spring + Tave_month + MAP + PPT_month, data = scaled)\
+\
+vifcoll <- vif(coll) \
+\
+
+\f0\b #check to see if it\'92s below accepted threshold\
+\
+\pard\pardeftab720\partightenfactor0
+
+\f1\b0 \cf0 library(brms)\
+library(geiger)\
+library(car)\
+library(ape)\
+library("Biostrings")\
+library(ggtree)\
+library(PhyloOrchard)\
+library(lattice)\
+\
+data(PyronWiens2011)\
+\
+tree2 = PyronWiens2011\
+\
+scaled$tip=gsub(" ","_",scaled$SpeciesID)\
+setdiff(unique(scaled$tip,tree$tip.label), tree2$tip.label)\
+\
+\pard\pardeftab720\partightenfactor0
+
+\f0\b \cf0 ## compute correlation matrix
+\f1\b0 \
+\
+cmatrix=vcv.phylo(tree2,cor=T)\
+\
+
+\f0\b ## starting parameters for MCMC
+\f1\b0 \
+\
+chain=10\
+\
+iter=20000\
+\
+thin=10\
+\
+warmup=10000\
+\
+delta=0.99\
+\
+scaled$InvSimpson <- as.integer(scaled$InvSimpson)\
+scaled$Shannon <- as.integer(scaled$Shannon)\
+\
+
+\f0\b ## fit model
+\f1\b0 \
+\
+set.seed(1)\
+\
+mod=brm(InvSimpson~1 + Habitat + LifeStage + Bd + RV + Elevation_ft + MAP + Tave_spring + Tave_month + PPT_month + (1|SpeciesID) + (1|tip), 
+\f0\b ## species = your species names, tips = species names corresponding to the phylogeny
+\f1\b0 \
+\
+        data=scaled,family=poisson,cov_ranef=list(tip=cmatrix), 
+\f0\b ## modify family based on your data\
+\pard\pardeftab720\partightenfactor0
+
+\f1\b0 \cf0 \
+        chains=chain,iter=iter,thin=thin,warmup=warmup, control=list(adapt_delta=delta))
+\f0\b \
+\
 
 \f1\b0 \
+\pard\pardeftab720\partightenfactor0
 
-\f0\b \outl0\strokewidth0 \outl0\strokewidth0 \strokec2 \
+\f0\b \cf0 \
 \pard\pardeftab720\partightenfactor0
 
 \f1\b0 \cf0 \
